@@ -33,7 +33,10 @@ exports.getProductBynama = (req,res) => {
 }
 
 exports.createProduct = (req,res) =>{
-    const { namaProduk,kategori,harga } = req.body
+    const { namaProduk,kategori } = req.body
+    // Parse the price to ensure it's treated as a number and not automatically divided
+    const harga = parseFloat(req.body.harga)
+    
     if (!req.file) {
         const err = new Error('Please upload a file')
         throw err;
@@ -52,6 +55,7 @@ exports.createProduct = (req,res) =>{
                 }else{
                     const idFoto = result[0].idFoto
                     const sql = 'INSERT INTO produk(namaProduk, kategori, harga, linkFoto) VALUES (?,?,?,?)'
+                    console.log('Saving price:', harga) // Debug log to see what's being saved
                     db.query(sql, [namaProduk, kategori, harga, idFoto], (err, result) => {
                         if(err){
                             return responsAPI(500,'Failed to create product','Kegagalan membuat product',res)
@@ -68,7 +72,11 @@ exports.createProduct = (req,res) =>{
 
 exports.updateProduct = (req,res) => {
     const id = req.params.id
-    const { namaProduk, kategori, harga } = req.body
+    const { namaProduk, kategori } = req.body
+    // Parse the price to ensure it's treated as a number and not automatically divided
+    const harga = parseFloat(req.body.harga)
+    console.log('Updating price to:', harga) // Debug log to see what's being updated
+    
     const sql = 'UPDATE produk SET namaProduk =?, kategori =?, harga =? WHERE idProduk =?'
     db.query(sql, [namaProduk, kategori, harga, id], (err, result) => {
         if(err){
